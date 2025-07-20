@@ -3,66 +3,25 @@ kind: Deployment
 metadata:
   name: {{ include "golimiter.fullname" . }}
   labels:
-    {{- include "golimiter.labels" . | nindent 4 }}
+    app: {{ include "golimiter.fullname" . }}
 spec:
-  {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
-  {{- end }}
   selector:
     matchLabels:
-      {{- include "golimiter.selectorLabels" . | nindent 6 }}
+      app: {{ include "golimiter.fullname" . }}
   template:
     metadata:
-      {{- with .Values.podAnnotations }}
-      annotations:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
       labels:
-        {{- include "golimiter.selectorLabels" . | nindent 8 }}
+        app: {{ include "golimiter.fullname" . }}
     spec:
-      {{- with .Values.imagePullSecrets }}
-      imagePullSecrets:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-      serviceAccountName: {{ include "golimiter.serviceAccountName" . }}
-      securityContext:
-        {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
-        - name: {{ .Chart.Name }}
-          securityContext:
-            {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+        - name: golimiter
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.service.port }}
           env:
             - name: REDIS_ADDR
-              value: {{ .Values.redis.addr }}
-            - name: REDIS_PASSWORD
-              value: {{ .Values.redis.password }}
-            - name: REDIS_DB
-              value: {{ .Values.redis.db | quote }}
-          ports:
-            - name: http
-              containerPort: 8080
-              protocol: TCP
-          livenessProbe:
-            httpGet:
-              path: /health
-              port: http
-          readinessProbe:
-            httpGet:
-              path: /health
-              port: http
-          resources:
-            {{- toYaml .Values.resources | nindent 12 }}
-      {{- with .Values.nodeSelector }}
-      nodeSelector:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-      {{- with .Values.affinity }}
-      affinity:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-      {{- with .Values.tolerations }}
-      tolerations:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
+              value: "{{ if .Values.redis.enabled }}redis:{{ .Values.redis.port }}{{ else }}{{ "" }}{{ end }}"
+            - name: SERVER_PORT
+              value: "{{ .Values.service.port }}"

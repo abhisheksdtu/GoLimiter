@@ -3,13 +3,13 @@ kind: Service
 metadata:
   name: {{ include "golimiter.fullname" . }}
   labels:
-    {{- include "golimiter.labels" . | nindent 4 }}
+    app: {{ include "golimiter.fullname" . }}
 spec:
   type: {{ .Values.service.type }}
   ports:
     - port: {{ .Values.service.port }}
-      targetPort: http
+      targetPort: {{ .Values.service.port }}
       protocol: TCP
       name: http
   selector:
-    {{- include "golimiter.selectorLabels" . | nindent 4 }}
+    app: {{ include "golimiter.fullname" . }}
