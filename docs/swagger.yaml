@@ -1,0 +1,63 @@
+basePath: /
+definitions:
+  api.CheckLimitRequest:
+    properties:
+      key:
+        example: my-api-key
+        type: string
+    required:
+    - key
+    type: object
+  api.CheckLimitResponse:
+    properties:
+      allowed:
+        example: true
+        type: boolean
+    type: object
+  gin.H:
+    additionalProperties: {}
+    type: object
+host: localhost:8080
+info:
+  contact:
+    email: support@swagger.io
+    name: API Support
+    url: http://www.swagger.io/support
+  description: This is a distributed rate limiter microservice.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: GoLimiter API
+  version: "1.0"
+paths:
+  /check-limit:
+    post:
+      consumes:
+      - application/json
+      description: Checks if a request for a given key is allowed based on the token
+        bucket algorithm.
+      parameters:
+      - description: Check Limit Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/api.CheckLimitRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.CheckLimitResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/gin.H'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/gin.H'
+      summary: Check if a request is within the rate limit
+swagger: "2.0"

@@ -1,0 +1,19 @@
+# Patterns to ignore when packaging Helm charts.
+# This is similar to .gitignore.
+
+# Common things to ignore
+.DS_Store
+.git/
+.gitignore
+.idea/
+.vscode/
+*.swp
+*~
+*.bak
+*.tmp
+
+# Chart sources
+charts/
+crds/
+tests/
+ci/
