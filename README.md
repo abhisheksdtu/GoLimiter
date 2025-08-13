@@ -1,6 +1,6 @@
 # GoLimiter
 
-A simple Go web app for distributed rate limiting (Phase 1 MVP).
+A simple Go web app for distributed rate limiting.
 
 ## Running
 
